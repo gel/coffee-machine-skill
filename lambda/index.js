@@ -53,21 +53,21 @@ function supportsAPL(handlerInput) {
   return supportsInterface(handlerInput, 'Alexa.Presentation.APL')
 }
 
-async function getCountFromDynamoDB(userId) {
+async function getCountFromDynamoDB(id) {
   const params = {
     TableName: TableName,
-    Key: { userId: userId },
+    Key: { id: id },
   };
   const data = await dynamoDB.get(params).promise();
   return data.Item ? data.Item.count : 0;
 }
 
-async function incrementCountInDynamoDB(userId) {
-  const count = await getCountFromDynamoDB(userId);
+async function incrementCountInDynamoDB(id) {
+  const count = await getCountFromDynamoDB(id);
   const updatedCount = count + 1;
   const params = {
     TableName: TableName,
-    Item: { userId: userId, count: updatedCount },
+    Item: { id: id, count: updatedCount },
   };
   await dynamoDB.put(params).promise();
   return updatedCount;
