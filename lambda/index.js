@@ -56,7 +56,7 @@ const GetNewFactHandler = {
     // checks request type
     return request.type === 'LaunchRequest'
       || (request.type === 'IntentRequest' && request.intent.name === 'GetNewFactIntent')
-      || request.intent.name === 'MakeCoffeeIntent';
+      || request.type === 'MakeCoffeeIntent';
   },
   async handle(handlerInput) {
     if (handlerInput.requestEnvelope.intent.name === 'MakeCoffeeIntent') {
