@@ -62,8 +62,7 @@ const GetNewFactHandler = {
   },
   async handle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
-    if (request.type === 'IntentRequest'
-        && request.intent.name === 'MakeCoffeeIntent') {
+    if (request.type === 'IntentRequest' && request.intent.name === 'MakeCoffeeIntent') {
         return handlerInput.responseBuilder.speak("Worked").getResponse();
     }
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
