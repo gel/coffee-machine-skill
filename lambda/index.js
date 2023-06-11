@@ -59,9 +59,6 @@ const GetNewFactHandler = {
       || request.type === 'MakeCoffeeIntent';
   },
   async handle(handlerInput) {
-    if (handlerInput.requestEnvelope.intent.name === 'MakeCoffeeIntent') {
-        return handlerInput.responseBuilder.speak("made coffee");
-    } else {
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         // gets a random fact by assigning an array to the variable
         // the random item from the array will be selected by the i18next library
@@ -101,7 +98,6 @@ const GetNewFactHandler = {
           .reprompt(requestAttributes.t('HELP_REPROMPT'))
           .withSimpleCard(requestAttributes.t('SKILL_NAME', requestAttributes.t(topicName.toUpperCase())), randomFact)
           .getResponse();
-    }
   },
 };
 
