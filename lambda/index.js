@@ -63,7 +63,7 @@ const GetNewFactHandler = {
   async handle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
     if (request.type === 'IntentRequest' && request.intent.name === 'MakeCoffeeIntent') {
-        return handlerInput.responseBuilder.speak("Worked").getResponse();
+        return handlerInput.responseBuilder.speak("Worked").reprompt("Worked").getResponse();
     }
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     // gets a random fact by assigning an array to the variable
