@@ -36,6 +36,9 @@ const planetURLs =
     'https://public-eu-west-1.s3.eu-west-1.amazonaws.com/pictures/planets/sun.jpg',
   ]
 
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
+const TableName = 'YOUR_DDB_TABLE_NAME';
+
 // helper functions for supported interfaces
 function supportsInterface(handlerInput, interfaceName) {
   const interfaces = ((((
@@ -47,6 +50,26 @@ function supportsInterface(handlerInput, interfaceName) {
 }
 function supportsAPL(handlerInput) {
   return supportsInterface(handlerInput, 'Alexa.Presentation.APL')
+}
+
+async function getCountFromDynamoDB(userId) {
+  const params = {
+    TableName: TableName,
+    Key: { userId: userId },
+  };
+  const data = await dynamoDB.get(params).promise();
+  return data.Item ? data.Item.count : 0;
+}
+
+async function incrementCountInDynamoDB(userId) {
+  const count = await getCountFromDynamoDB(userId);
+  const updatedCount = count + 1;
+  const params = {
+    TableName: TableName,
+    Item: { userId: userId, count: updatedCount },
+  };
+  await dynamoDB.put(params).promise();
+  return updatedCount;
 }
 
 // core functionality for fact skill
@@ -63,7 +86,22 @@ const GetNewFactHandler = {
   async handle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
     if (request.type === 'IntentRequest' && request.intent.name === 'MakeCoffeeIntent') {
-        return handlerInput.responseBuilder.speak("Worked").reprompt("Worked").getResponse();
+        //return handlerInput.responseBuilder.speak("Worked").reprompt("Worked").getResponse();
+        const userId = handlerInput.requestEnvelope.session.user.userId;
+        try {
+          const count = await incrementCountInDynamoDB(userId);
+          const speechText = `Tally recorded. Your count is now ${count}.`;
+          return handlerInput.responseBuilder
+            .speak(speechText)
+            .getResponse();
+        } catch (error) {
+          console.error(`Error handled: ${error.message}`);
+          const speechText = 'Sorry, I couldn\'t record your tally. Please try again.';
+          return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .getResponse();
+        } 
     }
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     // gets a random fact by assigning an array to the variable
