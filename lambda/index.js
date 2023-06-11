@@ -55,49 +55,49 @@ const GetNewFactHandler = {
     const request = handlerInput.requestEnvelope.request;
     // checks request type
     return request.type === 'LaunchRequest'
-      || (request.type === 'IntentRequest' && request.intent.name === 'GetNewFactIntent')
-      || request.type === 'MakeCoffeeIntent';
+      || (request.type === 'IntentRequest'
+        && request.intent.name === 'GetNewFactIntent');
   },
   async handle(handlerInput) {
-        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-        // gets a random fact by assigning an array to the variable
-        // the random item from the array will be selected by the i18next library
-        // the i18next library is set up in the Request Interceptor
-        //gets fact topic name
-        var topicName = await getTopicName(handlerInput);
-        const randomObj = requestAttributes.t(getFactTopic(topicName));
-        const randomFact = randomObj.fact;
-        const randomFactUrl = randomObj.url;
-        // concatenates a standard message with the random fact
-        const speakOutput = requestAttributes.t('GET_FACT_MESSAGE', personalizationUtil.getPersonalizedPrompt(handlerInput)) + randomFact;
-        if (supportsAPL(handlerInput)) {
-          return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .addDirective({
-              "type": "Alexa.Presentation.APL.RenderDocument",
-              "token": "documentToken",
-              "document": require('./aplDocument.json'),
-              "datasources": {
-                "data": {
-                  "properties": {
-                    "factImage": randomFactUrl,
-                    "factString": randomFact
-                  }
-                }
-              },
-              "sources": {}
-            })
-            .withSimpleCard(requestAttributes.t('SKILL_NAME', requestAttributes.t(topicName.toUpperCase())), randomFact)
-            .getResponse();
-        }
-    
-        return handlerInput.responseBuilder
-          .speak(speakOutput)
-          // Uncomment the next line if you want to keep the session open so you can
-          // ask for another fact without first re-opening the skill
-          .reprompt(requestAttributes.t('HELP_REPROMPT'))
-          .withSimpleCard(requestAttributes.t('SKILL_NAME', requestAttributes.t(topicName.toUpperCase())), randomFact)
-          .getResponse();
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+    // gets a random fact by assigning an array to the variable
+    // the random item from the array will be selected by the i18next library
+    // the i18next library is set up in the Request Interceptor
+    //gets fact topic name
+    var topicName = await getTopicName(handlerInput);
+    const randomObj = requestAttributes.t(getFactTopic(topicName));
+    const randomFact = randomObj.fact;
+    const randomFactUrl = randomObj.url;
+    // concatenates a standard message with the random fact
+    const speakOutput = requestAttributes.t('GET_FACT_MESSAGE', personalizationUtil.getPersonalizedPrompt(handlerInput)) + randomFact;
+    if (supportsAPL(handlerInput)) {
+      return handlerInput.responseBuilder
+        .speak(speakOutput)
+        .addDirective({
+          "type": "Alexa.Presentation.APL.RenderDocument",
+          "token": "documentToken",
+          "document": require('./aplDocument.json'),
+          "datasources": {
+            "data": {
+              "properties": {
+                "factImage": randomFactUrl,
+                "factString": randomFact
+              }
+            }
+          },
+          "sources": {}
+        })
+        .withSimpleCard(requestAttributes.t('SKILL_NAME', requestAttributes.t(topicName.toUpperCase())), randomFact)
+        .getResponse();
+    }
+
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      // Uncomment the next line if you want to keep the session open so you can
+      // ask for another fact without first re-opening the skill
+      .reprompt(requestAttributes.t('HELP_REPROMPT'))
+      .withSimpleCard(requestAttributes.t('SKILL_NAME', requestAttributes.t(topicName.toUpperCase())), randomFact)
+      .getResponse();
   },
 };
 
