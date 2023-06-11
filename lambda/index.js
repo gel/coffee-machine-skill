@@ -61,6 +61,8 @@ const GetNewFactHandler = {
         && request.intent.name === 'MakeCoffeeIntent');
   },
   async handle(handlerInput) {
+    return handlerInput.responseBuilder.speak("Worked").getResponse();      
+      /*
     const request = handlerInput.requestEnvelope.request;
     if (request.type === 'IntentRequest' && request.intent.name === 'MakeCoffeeIntent') {
         return handlerInput.responseBuilder.speak("Worked").getResponse();
@@ -104,6 +106,7 @@ const GetNewFactHandler = {
       .reprompt(requestAttributes.t('HELP_REPROMPT'))
       .withSimpleCard(requestAttributes.t('SKILL_NAME', requestAttributes.t(topicName.toUpperCase())), randomFact)
       .getResponse();
+      */
   },
 };
 
