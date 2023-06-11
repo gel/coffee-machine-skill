@@ -55,13 +55,12 @@ const GetNewFactHandler = {
     const request = handlerInput.requestEnvelope.request;
     // checks request type
     return request.type === 'LaunchRequest'
-      || (request.type === 'IntentRequest'
-        && request.intent.name === 'GetNewFactIntent'
-        && request.intent.name === 'MakeCoffeeIntent');
+      || (request.type === 'IntentRequest' && request.intent.name === 'GetNewFactIntent')
+      || request.intent.name === 'MakeCoffeeIntent';
   },
   async handle(handlerInput) {
     if (handlerInput.requestEnvelope.intent.name === 'MakeCoffeeIntent') {
-        return handlerInput.responseBuilder.speak('made coffee');
+        return handlerInput.responseBuilder.speak("made coffee");
     } else {
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         // gets a random fact by assigning an array to the variable
