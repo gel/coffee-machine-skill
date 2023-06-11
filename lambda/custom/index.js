@@ -16,6 +16,9 @@
 //
 
 // sets up dependencies
+const AWS = require('aws-sdk');
+AWS.config.update({region: process.env.DYNAMODB_PERSISTENCE_REGION});
+
 const Alexa = require('ask-sdk-core');
 const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
@@ -36,6 +39,9 @@ const planetURLs =
     'https://public-eu-west-1.s3.eu-west-1.amazonaws.com/pictures/planets/sun.jpg',
   ]
 
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
+const TableName = process.env.DYNAMODB_PERSISTENCE_TABLE_NAME;
+
 // helper functions for supported interfaces
 function supportsInterface(handlerInput, interfaceName) {
   const interfaces = ((((
@@ -49,6 +55,26 @@ function supportsAPL(handlerInput) {
   return supportsInterface(handlerInput, 'Alexa.Presentation.APL')
 }
 
+async function getCountFromDynamoDB(id) {
+  const params = {
+    TableName: TableName,
+    Key: { id: id },
+  };
+  const data = await dynamoDB.get(params).promise();
+  return data.Item ? data.Item.count : 0;
+}
+
+async function incrementCountInDynamoDB(id) {
+  const count = await getCountFromDynamoDB(id);
+  const updatedCount = count + 1;
+  const params = {
+    TableName: TableName,
+    Item: { id: id, count: updatedCount },
+  };
+  await dynamoDB.put(params).promise();
+  return updatedCount;
+}
+
 // core functionality for fact skill
 const GetNewFactHandler = {
   canHandle(handlerInput) {
@@ -56,9 +82,30 @@ const GetNewFactHandler = {
     // checks request type
     return request.type === 'LaunchRequest'
       || (request.type === 'IntentRequest'
-        && request.intent.name === 'GetNewFactIntent');
+        && request.intent.name === 'GetNewFactIntent')
+      || (request.type === 'IntentRequest'
+        && request.intent.name === 'MakeCoffeeIntent');
   },
   async handle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    if (request.type === 'IntentRequest' && request.intent.name === 'MakeCoffeeIntent') {
+        //return handlerInput.responseBuilder.speak("Worked").reprompt("Worked").getResponse();
+        const userId = handlerInput.requestEnvelope.session.user.userId;
+        try {
+          const count = await incrementCountInDynamoDB(userId);
+          const speechText = `Tally recorded. Your count is now ${count}.`;
+          return handlerInput.responseBuilder
+            .speak(speechText)
+            .getResponse();
+        } catch (error) {
+          console.error(`Error handled: ${error.message}`);
+          const speechText = 'Sorry, I couldn\'t record your tally. Please try again.';
+          return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .getResponse();
+        }
+    }
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     // gets a random fact by assigning an array to the variable
     // the random item from the array will be selected by the i18next library
