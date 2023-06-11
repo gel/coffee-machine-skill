@@ -60,7 +60,7 @@ const GetNewFactHandler = {
         && request.intent.name === 'MakeCoffeeIntent');
   },
   async handle(handlerInput) {
-    if handlerInput.requestEnvelope.intent.name === 'MakeCoffeeIntent' {
+    if (handlerInput.requestEnvelope.intent.name === 'MakeCoffeeIntent') {
         return handlerInput.responseBuilder.speak('made coffee');
     } else {
         const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
