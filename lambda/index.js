@@ -38,7 +38,7 @@ const planetURLs =
   ]
 
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
-const TableName = 'YOUR_DDB_TABLE_NAME';
+const TableName = '86ca4b21-38c9-4a2a-85af-1d41b7ad180e';
 
 // helper functions for supported interfaces
 function supportsInterface(handlerInput, interfaceName) {
