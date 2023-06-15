@@ -82,8 +82,6 @@ const GetNewFactHandler = {
     // checks request type
     return request.type === 'LaunchRequest'
       || (request.type === 'IntentRequest'
-        && request.intent.name === 'GetNewFactIntent')
-      || (request.type === 'IntentRequest'
         && request.intent.name === 'MakeCoffeeIntent');
   },
   async handle(handlerInput) {
@@ -105,109 +103,13 @@ const GetNewFactHandler = {
             .reprompt(speechText)
             .getResponse();
         } 
-    }
-    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-    // gets a random fact by assigning an array to the variable
-    // the random item from the array will be selected by the i18next library
-    // the i18next library is set up in the Request Interceptor
-    //gets fact topic name
-    var topicName = await getTopicName(handlerInput);
-    const randomObj = requestAttributes.t(getFactTopic(topicName));
-    const randomFact = randomObj.fact;
-    const randomFactUrl = randomObj.url;
-    // concatenates a standard message with the random fact
-    const speakOutput = requestAttributes.t('GET_FACT_MESSAGE', personalizationUtil.getPersonalizedPrompt(handlerInput)) + randomFact;
-    if (supportsAPL(handlerInput)) {
+    } else {
+      const speechText = 'Welcome to coffee machine skill. You can say make coffee, perform maintanance or count coffee';
       return handlerInput.responseBuilder
-        .speak(speakOutput)
-        .addDirective({
-          "type": "Alexa.Presentation.APL.RenderDocument",
-          "token": "documentToken",
-          "document": require('./aplDocument.json'),
-          "datasources": {
-            "data": {
-              "properties": {
-                "factImage": randomFactUrl,
-                "factString": randomFact
-              }
-            }
-          },
-          "sources": {}
-        })
-        .withSimpleCard(requestAttributes.t('SKILL_NAME', requestAttributes.t(topicName.toUpperCase())), randomFact)
+        .speak(speechText)
+        .reprompt(speechText)
         .getResponse();
     }
-
-    return handlerInput.responseBuilder
-      .speak(speakOutput)
-      // Uncomment the next line if you want to keep the session open so you can
-      // ask for another fact without first re-opening the skill
-      .reprompt(requestAttributes.t('HELP_REPROMPT'))
-      .withSimpleCard(requestAttributes.t('SKILL_NAME', requestAttributes.t(topicName.toUpperCase())), randomFact)
-      .getResponse();
-  },
-};
-
-/**
- * 
- * Get fact topic from intent else return default topic
- * 
- * @param handlerInput 
- * @returns 
- */
-const getTopicName = async function (handlerInput) {
-  const currentIntent = handlerInput.requestEnvelope.request.intent;
-  if (currentIntent && currentIntent.slots.factType && currentIntent.slots.factType.value) {
-    return currentIntent.slots.factType.value;
-  }
-  return await personalizationStorageUtil.getPreferenceOrDefault(handlerInput, DEFAULT_TOPIC);
-}
-
-/**
- * Use topic name map corresponding fact topic else default to SPACE_FACTS.
- * New topicName needs to be added here with ther corresponding FactTopic in languageStrings.
- * @param topicName passed as slot value.
- */
-const getFactTopic = (topicName) => {
-  if (topicName) {
-    switch (topicName) {
-      case 'football':
-      case 'soccer':
-        return 'FOOTBALL_FACTS'
-      default:
-        return 'SPACE_FACTS';
-    }
-  }
-  return 'SPACE_FACTS';
-}
-
-/**
- * Functionality for add personlized(favourite) fact topic 
- * Persists fact type intent details using personlized preference storage.
- * 
- */
-const SetPersonalizedFactPreferencesHandler = {
-  canHandle(handlerInput) {
-    const request = handlerInput.requestEnvelope.request;
-    // checks request type
-    return request.type === 'IntentRequest'
-      && request.intent.name === 'AddNewFact';
-  },
-  async handle(handlerInput) {
-    const currentIntent = handlerInput.requestEnvelope.request.intent;
-    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-    var message = requestAttributes.t('ERROR_MESSAGE');
-    if (currentIntent.slots.factType && currentIntent.slots.factType.value) {
-      const factType = currentIntent.slots.factType.value;
-      //persist new fact as personlized perference
-      const persistenceConfirmation = await personalizationStorageUtil.savePreference(handlerInput, factType)
-      //give back error message if personalization not enabled.
-      message = persistenceConfirmation ? (requestAttributes.t('CONFIRMATION_MESSAGE', personalizationUtil.getPersonalizedPrompt(handlerInput), factType)) : requestAttributes.t('PREFERENCE_ERROR')
-    }
-    return handlerInput.responseBuilder
-      .speak(message)
-      .reprompt(requestAttributes.t('HELP_REPROMPT'))
-      .getResponse();
   },
 };
 
