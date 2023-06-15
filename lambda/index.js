@@ -249,7 +249,7 @@ exports.handler = skillBuilder
 const enData = {
   translation: {
     SKILL_NAME: '%s Facts',
-    HELP_MESSAGE: 'You can say tell me a fact, or, you can say exit... What can I help you with?',
+    HELP_MESSAGE: 'You can say make coffee, perform maintenance or count coffees',
     HELP_REPROMPT: 'What can I help you with?',
     FALLBACK_MESSAGE: 'The Facts skill can\'t help you with that.  It can help you discover facts if you say tell me a fact. What can I help you with?',
     FALLBACK_REPROMPT: 'What can I help you with?',
