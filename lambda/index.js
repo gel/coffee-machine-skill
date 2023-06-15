@@ -104,7 +104,7 @@ const GetNewFactHandler = {
             .getResponse();
         } 
     } else {
-      const speechText = 'Welcome to coffee machine skill. You can say make coffee, perform maintanance or count coffee';
+      const speechText = 'Welcome to coffee machine skill. You can say make coffee, perform maintenance or count coffee';
       return handlerInput.responseBuilder
         .speak(speechText)
         .reprompt(speechText)
