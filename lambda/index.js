@@ -238,7 +238,6 @@ exports.handler = skillBuilder
     ExitHandler,
     FallbackHandler,
     SessionEndedRequestHandler,
-    SetPersonalizedFactPreferencesHandler,
   )
   .addRequestInterceptors(LocalizationInterceptor)
   .addErrorHandlers(ErrorHandler)
