@@ -1,0 +1,42 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "slots": [
+            {
+              "name": "coffeeCount",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "name": "MakeCoffeeIntent",
+          "samples": [
+            "make an espresso",
+            "make coffee",
+            "plus {coffeeCount}",
+            "make espresso",
+            "make {coffeeCount} coffees"
+          ]
+        }
+      ],
+      "types": [],
+      "invocationName": "coffee machine"
+    }
+  }
+}
