@@ -249,29 +249,11 @@ exports.handler = skillBuilder
 const enData = {
   translation: {
     SKILL_NAME: '%s Facts',
-    GET_FACT_MESSAGE: 'Ok %s, Here\'s your fact : ',
     HELP_MESSAGE: 'You can say tell me a fact, or, you can say exit... What can I help you with?',
     HELP_REPROMPT: 'What can I help you with?',
     FALLBACK_MESSAGE: 'The Facts skill can\'t help you with that.  It can help you discover facts if you say tell me a fact. What can I help you with?',
     FALLBACK_REPROMPT: 'What can I help you with?',
     ERROR_MESSAGE: 'Sorry, an error occurred.',
-    PREFERENCE_ERROR: 'Sorry, I am unable to retrieve your personalized identity.',
-    STOP_MESSAGE: 'Goodbye!',
-    CONFIRMATION_MESSAGE: 'Ok %s, I have added %s as a favorite topic',
-    SPACE_FACTS:
-      [
-        'A year on Mercury is just 88 days long.',
-        'Despite being farther from the Sun, Venus experiences higher temperatures than Mercury.',
-        'On Mars, the Sun appears about half the size as it does on Earth.',
-        'Jupiter has the shortest day of all the planets.',
-        'The Sun is an almost perfect sphere.',
-      ],
-    FOOTBALL_FACTS:
-      [
-        'Football is the most watched and most played sport on earth.',
-        'The fastest goal ever scored took only 2.4 seconds.',
-        'Only 8 countries have won the World Cup.',
-      ],
   }
 };
 
