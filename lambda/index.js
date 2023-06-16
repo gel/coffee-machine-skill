@@ -94,10 +94,10 @@ async function createCountInDynamoDB(userId) {
   }
 }
 
-async function performMaintenance(userId, count) {
+async function performMaintenance(id, count) {
   const params = {
     TableName: TableName,
-    Key: { userId: userId },
+    Key: { id: id },
     UpdateExpression: 'SET #lm = :count',
     ExpressionAttributeNames: { '#lm': 'lastMaintenance' },
     ExpressionAttributeValues: { ':count': count },
