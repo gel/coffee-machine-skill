@@ -273,14 +273,6 @@ const LocalizationInterceptor = {
         postProcess: 'sprintf',
         sprintf: values
       });
-      // If an array is used then a random value is selected
-      if (Array.isArray(value)) {
-        let randomValue = Math.floor(Math.random() * value.length)
-        return {
-          "fact": value[randomValue],
-          "url": planetURLs[randomValue]
-        }
-      }
       return value;
     };
     // this gets the request attributes and save the localize function inside
