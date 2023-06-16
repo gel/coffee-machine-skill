@@ -73,7 +73,7 @@ async function incrementCountInDynamoDB(id) {
   } catch (error) {
     if (error.code === 'ValidationException' && error.message.includes('The provided expression refers to an attribute that does not exist in the item')) {
       // Item doesn't exist, attempt to create a new item
-      const count = createCountInDynamoDB(userId);
+      const count = createCountInDynamoDB(id);
       return [count, 0];
     } else {
       console.error(`Error updating count: ${error.message}`);
