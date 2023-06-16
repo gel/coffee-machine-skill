@@ -48,15 +48,50 @@ async function getCountFromDynamoDB(id) {
   return data.Item ? data.Item.count : 0;
 }
 
-async function incrementCountInDynamoDB(id) {
-  const count = await getCountFromDynamoDB(id);
-  const updatedCount = count + 1;
+async function incrementCountInDynamoDB(userId) {
   const params = {
     TableName: TableName,
-    Item: { id: id, count: updatedCount },
+    Key: { userId: userId },
+    UpdateExpression: 'SET #c = #c + :increment',
+    ExpressionAttributeNames: { '#c': 'count' },
+    ExpressionAttributeValues: { ':increment': 1 },
+    ReturnValues: 'UPDATED_NEW'
   };
-  await dynamoDB.put(params).promise();
-  return updatedCount;
+
+  try {
+    const data = await dynamoDB.update(params).promise();
+    const updatedCount = data.Attributes.count;
+    return updatedCount;
+  } catch (error) {
+    if (error.code === 'ValidationException' && error.message.includes('The provided expression refers to an attribute that does not exist in the item')) {
+      // Item doesn't exist, attempt to create a new item
+      return createCountInDynamoDB(userId);
+    } else {
+      console.error(`Error updating count: ${error.message}`);
+      throw error;
+    }
+  }
+}
+
+async function createCountInDynamoDB(userId) {
+  const params = {
+    TableName: TableName,
+    Item: { userId: userId, count: 1 },
+    ConditionExpression: 'attribute_not_exists(userId)'
+  };
+
+  try {
+    await dynamoDB.put(params).promise();
+    return 1;
+  } catch (error) {
+    if (error.code === 'ConditionalCheckFailedException') {
+      // Another concurrent write created the item, retry incrementing the count
+      return incrementCountInDynamoDB(userId);
+    } else {
+      console.error(`Error creating count: ${error.message}`);
+      throw error;
+    }
+  }
 }
 
 // core functionality for fact skill
