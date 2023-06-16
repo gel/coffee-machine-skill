@@ -48,10 +48,10 @@ async function getCountFromDynamoDB(id) {
   return data.Item ? data.Item.count : 0;
 }
 
-async function incrementCountInDynamoDB(userId) {
+async function incrementCountInDynamoDB(id) {
   const params = {
     TableName: TableName,
-    Key: { userId: userId },
+    Key: { id: id },
     UpdateExpression: 'SET #c = #c + :increment',
     ExpressionAttributeNames: { '#c': 'count' },
     ExpressionAttributeValues: { ':increment': 1 },
