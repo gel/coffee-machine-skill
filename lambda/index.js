@@ -52,12 +52,12 @@ async function getItemFromDynamoDB(id) {
 
 async function getCountFromDynamoDB(id) {
   const data = await getItemFromDynamoDB(id);
-  return data.Item ? data.Item.count : 0;
+  return data.Item ? (data.Item.count ? data.Item.count : 0 ) : 0;
 }
 
 async function getCoffeeDetails(id) {
   const data = await getItemFromDynamoDB(id);
-  const count =  data.Item ? data.Item.count : 0;
+  const count =  data.Item ? (data.Item.count ? data.Item.count : 0 ) : 0;
   const lm = data.Item ? ( data.Item.lastMaintenance ? data.Item.lastMaintenance : 0) : 0;
   return [count, lm];
 }
