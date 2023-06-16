@@ -80,8 +80,9 @@ const MakeCoffeeHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
     return request.type === 'LaunchRequest'
-      || (request.type === 'IntentRequest'
-        && request.intent.name === 'MakeCoffeeIntent');
+      || (request.type === 'IntentRequest' && request.intent.name === 'MakeCoffeeIntent')
+      || (request.type === 'IntentRequest' && request.intent.name === 'CountCoffeeIntent')
+      || (request.type === 'IntentRequest' && request.intent.name === 'PerformMaintenanceIntent');
   },
   async handle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
