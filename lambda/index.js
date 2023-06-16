@@ -92,7 +92,7 @@ async function incrementCountInDynamoDB(id) {
 async function createCountInDynamoDB(userId) {
   const params = {
     TableName: TableName,
-    Item: { userId: userId, count: 1 },
+    Item: { id: id, count: 1 },
     ConditionExpression: 'attribute_not_exists(userId)'
   };
 
@@ -150,7 +150,7 @@ const MakeCoffeeHandler = {
             speechText = speechText + ` Please clean your machine as soon as possible.`;
           } else {
             const nextCleaning = lm + cleaningThreshold - count;
-            speechText = speechText + ` ${nextCleaning} coffees left before cleaning.`;            
+            speechText = speechText + ` ${nextCleaning} coffees left before cleaning.`;
           }
           return handlerInput.responseBuilder
             .speak(speechText)
