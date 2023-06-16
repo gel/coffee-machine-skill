@@ -80,7 +80,7 @@ async function incrementCountInDynamoDB(id) {
   } catch (error) {
     if (error.code === 'ValidationException' && error.message.includes('The provided expression refers to an attribute that does not exist in the item')) {
       // Item doesn't exist, attempt to create a new item
-      const count = createCountInDynamoDB(id);
+      const count = createNewItem(id);
       return [count, 0];
     } else {
       console.error(`Error updating count: ${error.message}`);
@@ -89,25 +89,14 @@ async function incrementCountInDynamoDB(id) {
   }
 }
 
-async function createCountInDynamoDB(id) {
+async function createNewItem(id) {
+  const newCount = 1;
   const params = {
     TableName: TableName,
-    Item: { id: id, count: 1 },
-    ConditionExpression: 'attribute_not_exists(id)'
+    Item: { id: id, count: newCount },
   };
-
-  try {
-    await dynamoDB.put(params).promise();
-    return 1;
-  } catch (error) {
-    if (error.code === 'ConditionalCheckFailedException') {
-      // Another concurrent write created the item, retry incrementing the count
-      return incrementCountInDynamoDB(id);
-    } else {
-      console.error(`Error creating count: ${error.message}`);
-      throw error;
-    }
-  }
+  await dynamoDB.put(params).promise();
+  return newCount;
 }
 
 async function performMaintenance(id, count) {
