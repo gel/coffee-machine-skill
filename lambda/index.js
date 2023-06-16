@@ -59,9 +59,9 @@ async function incrementCountInDynamoDB(id) {
   const params = {
     TableName: TableName,
     Key: { id: id },
-    UpdateExpression: 'SET #c = #c + :increment',
-    ExpressionAttributeNames: { '#c': 'count' },
-    ExpressionAttributeValues: { ':increment': 1 },
+    UpdateExpression: 'ADD #lm :change, SET #c = #c + :increment',
+    ExpressionAttributeNames: { '#c': 'count', '#lm': 'lastMaintenance' },
+    ExpressionAttributeValues: { ':increment': 1, ':change': 0 },
     ReturnValues: 'ALL_NEW'
   };
 
