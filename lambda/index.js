@@ -58,7 +58,7 @@ async function getCountFromDynamoDB(id) {
 async function getCoffeeDetails(id) {
   const data = await getItemFromDynamoDB(id);
   const count =  data.Item ? data.Item.count : 0;
-  const lm = data.Item ? data.Item.lastMaintenance : 0;
+  const lm = data.Item ? ( data.Item.lastMaintenance ? data.Item.lastMaintenance : 0) : 0;
   return [count, lm];
 }
 
