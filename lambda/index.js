@@ -22,22 +22,6 @@ AWS.config.update({region: process.env.DYNAMODB_PERSISTENCE_REGION});
 const Alexa = require('ask-sdk-core');
 const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
-/* personalization Utility avaialabe when skill personalization is turned on*/
-const personalizationUtil = require('./personalizationUtil')
-const personalizationStorageUtil = require('./personalizationStorageUtil')
-/* constants */
-const DEFAULT_TOPIC = "SPACE"
-const FACT_TYPE = "factType"
-
-// declaring picture URLs for each planet
-const planetURLs =
-  [
-    'https://public-eu-west-1.s3.eu-west-1.amazonaws.com/pictures/planets/mercury.jpg',
-    'https://public-eu-west-1.s3.eu-west-1.amazonaws.com/pictures/planets/venus.jpg',
-    'https://public-eu-west-1.s3.eu-west-1.amazonaws.com/pictures/planets/mars.jpg',
-    'https://public-eu-west-1.s3.eu-west-1.amazonaws.com/pictures/planets/jupiter.jpg',
-    'https://public-eu-west-1.s3.eu-west-1.amazonaws.com/pictures/planets/sun.jpg',
-  ]
 
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 const TableName = process.env.DYNAMODB_PERSISTENCE_TABLE_NAME;
@@ -252,8 +236,6 @@ exports.handler = skillBuilder
   )
   .addRequestInterceptors(LocalizationInterceptor)
   .addErrorHandlers(ErrorHandler)
-  //define personalized persistence adapter for preference storage. 
-  .withPersistenceAdapter(personalizationStorageUtil.personlizedPersitenceAdapter())
   .withCustomUserAgent('sample/basic-fact/v2')
   .lambda();
 
