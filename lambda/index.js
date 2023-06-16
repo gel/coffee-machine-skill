@@ -145,9 +145,12 @@ const MakeCoffeeHandler = {
           const item = await incrementCountInDynamoDB(userId);
           const count = item[0];
           const lm = item[1];
-          let speechText = `Coffee recorded. Your coffee count is now ${count}. Last cleaning is on coffee ${lm}`;
+          let speechText = `Coffee recorded. Your coffee count is now ${count}.`;
           if (count >= lm + cleaningThreshold) {
             speechText = speechText + ` Please clean your machine as soon as possible.`;
+          } else {
+            const nextCleaning = lm + cleaningThreshold - count;
+            speechText = speechText + ` ${nextCleaning} coffees left before cleaning.`;            
           }
           return handlerInput.responseBuilder
             .speak(speechText)
@@ -168,7 +171,7 @@ const MakeCoffeeHandler = {
       if (count >= lm + cleaningThreshold) {
         speechText = speechText + ` Please clean your machine as soon as possible.`;
       } else {
-        nextCleaning = lm + cleaningThreshold - count;
+        const nextCleaning = lm + cleaningThreshold - count;
         speechText = speechText + ` ${nextCleaning} coffees left before cleaning.`;
       }
 
@@ -183,7 +186,7 @@ const MakeCoffeeHandler = {
         .speak(speechText)
         .getResponse();        
     } else {
-      const speechText = 'Welcome to coffee machine skill. You can say make coffee, perform maintenance or count coffee';
+      const speechText = 'Welcome to coffee machine skill. You can say make coffee, perform cleaning or count coffee';
       return handlerInput.responseBuilder
         .speak(speechText)
         .reprompt(speechText)
