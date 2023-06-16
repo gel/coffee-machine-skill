@@ -94,6 +94,23 @@ async function createCountInDynamoDB(userId) {
   }
 }
 
+async function performMaintenance(userId, count) {
+  const params = {
+    TableName: TableName,
+    Key: { userId: userId },
+    UpdateExpression: 'SET #lm = :count',
+    ExpressionAttributeNames: { '#lm': 'lastMaintenance' },
+    ExpressionAttributeValues: { ':count': count },
+  };
+
+  try {
+    await dynamoDB.update(params).promise();
+  } catch (error) {
+    console.error(`Error marking last maintenance: ${error.message}`);
+    throw error;
+  }
+}
+
 // core functionality for fact skill
 const MakeCoffeeHandler = {
   canHandle(handlerInput) {
@@ -124,12 +141,14 @@ const MakeCoffeeHandler = {
         } 
     } else if (request.type === 'IntentRequest' && request.intent.name === 'CountCoffeeIntent') {
       const count = await getCountFromDynamoDB(userId);
-      const speechText = `You made ${count} Coffees`;
+      const speechText = `You have made ${count} coffees.`;
       return handlerInput.responseBuilder
         .speak(speechText)
         .getResponse();
     } else if (request.type === 'IntentRequest' && request.intent.name === 'PerformMaintenanceIntent') {
-      const speechText = `Maintenance`;
+      const count = await getCountFromDynamoDB(userId);
+      await performMaintenance(userId, count);
+      const speechText = `You have cleaned the machine on coffee number ${count}.`;
       return handlerInput.responseBuilder
         .speak(speechText)
         .getResponse();        
