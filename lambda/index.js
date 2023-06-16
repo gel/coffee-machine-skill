@@ -22,8 +22,12 @@ AWS.config.update({region: process.env.DYNAMODB_PERSISTENCE_REGION});
 const Alexa = require('ask-sdk-core');
 const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
-
+/* personalization Utility avaialabe when skill personalization is turned on*/
+const personalizationUtil = require('./personalizationUtil')
 const personalizationStorageUtil = require('./personalizationStorageUtil')
+/* constants */
+const DEFAULT_TOPIC = "SPACE"
+const FACT_TYPE = "factType"
 
 // declaring picture URLs for each planet
 const planetURLs =
@@ -72,16 +76,19 @@ async function incrementCountInDynamoDB(id) {
 }
 
 // core functionality for fact skill
-const MakeCoffeeHandler = {
+const GetNewFactHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
     // checks request type
     return request.type === 'LaunchRequest'
-      || (request.type === 'IntentRequest' && request.intent.name === 'MakeCoffeeIntent');
+      || (request.type === 'IntentRequest'
+        && request.intent.name === 'MakeCoffeeIntent');
   },
   async handle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     if (request.type === 'IntentRequest' && request.intent.name === 'MakeCoffeeIntent') {
+        //return handlerInput.responseBuilder.speak("Worked").reprompt("Worked").getResponse();
         const userId = handlerInput.requestEnvelope.session.user.userId;
         try {
           const count = await incrementCountInDynamoDB(userId);
@@ -104,37 +111,6 @@ const MakeCoffeeHandler = {
         .reprompt(speechText)
         .getResponse();
     }
-  },
-};
-
-
-const CountCoffeeHandler = {
-  canHandle(handlerInput) {
-    const request = handlerInput.requestEnvelope.request;
-    return request.type === 'IntentRequest'
-      && request.intent.name === 'AMAZON.CountCoffeeIntent';
-  },
-  handle(handlerInput) {
-    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-    return handlerInput.responseBuilder
-      .speak("Test")
-      .reprompt("Test")
-      .getResponse();
-  },
-};
-
-const PerformMaintenanceHandler = {
-  canHandle(handlerInput) {
-    const request = handlerInput.requestEnvelope.request;
-    return request.type === 'IntentRequest'
-      && request.intent.name === 'AMAZON.HelpIntent';
-  },
-  handle(handlerInput) {
-    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-    return handlerInput.responseBuilder
-    .speak("Maintain")
-    .reprompt("Maintain")
-      .getResponse();
   },
 };
 
@@ -258,9 +234,7 @@ const skillBuilder = Alexa.SkillBuilders.custom();
 
 exports.handler = skillBuilder
   .addRequestHandlers(
-    MakeCoffeeHandler,
-    CountCoffeeHandler,
-    PerformMaintenanceHandler,
+    GetNewFactHandler,
     HelpHandler,
     ExitHandler,
     FallbackHandler,
@@ -275,8 +249,8 @@ exports.handler = skillBuilder
 
 const enData = {
   translation: {
-    SKILL_NAME: '%s Coffee Machine',
-    HELP_MESSAGE: 'You can say make coffee, perform maintenance or count coffee',
+    SKILL_NAME: '%s Facts',
+    HELP_MESSAGE: 'You can say make coffee, say perform maintenance or say count coffees',
     HELP_REPROMPT: 'What can I help you with?',
     FALLBACK_MESSAGE: 'The Facts skill can\'t help you with that.  It can help you discover facts if you say tell me a fact. What can I help you with?',
     FALLBACK_REPROMPT: 'What can I help you with?',
