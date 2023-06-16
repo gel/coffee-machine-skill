@@ -76,10 +76,9 @@ async function incrementCountInDynamoDB(id) {
 }
 
 // core functionality for fact skill
-const GetNewFactHandler = {
+const MakeCoffeeHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
-    // checks request type
     return request.type === 'LaunchRequest'
       || (request.type === 'IntentRequest'
         && request.intent.name === 'MakeCoffeeIntent');
@@ -104,6 +103,16 @@ const GetNewFactHandler = {
             .reprompt(speechText)
             .getResponse();
         } 
+    } else if (request.type === 'IntentRequest' && request.intent.name === 'CountCoffeeIntent') {
+      const speechText = `Count`;
+      return handlerInput.responseBuilder
+        .speak(speechText)
+        .getResponse();
+    } else if (request.type === 'IntentRequest' && request.intent.name === 'PerformMaintenanceIntent') {
+      const speechText = `Maintenance`;
+      return handlerInput.responseBuilder
+        .speak(speechText)
+        .getResponse();        
     } else {
       const speechText = 'Welcome to coffee machine skill. You can say make coffee, perform maintenance or count coffee';
       return handlerInput.responseBuilder
@@ -234,7 +243,7 @@ const skillBuilder = Alexa.SkillBuilders.custom();
 
 exports.handler = skillBuilder
   .addRequestHandlers(
-    GetNewFactHandler,
+    MakeCoffeeHandler,
     HelpHandler,
     ExitHandler,
     FallbackHandler,
