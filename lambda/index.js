@@ -138,7 +138,7 @@ const MakeCoffeeHandler = {
           const item = await incrementCountInDynamoDB(userId);
           const count = item[0];
           const lm = item[1];
-          const speechText = `Coffee recorded. Your coffee count is now ${count}. Last maintenance is on coffee ${lm}`;
+          let speechText = `Coffee recorded. Your coffee count is now ${count}. Last maintenance is on coffee ${lm}`;
           if (count >= lm + cleaningThreshold) {
             speechText = speechText + ` Please clean your machine as soon as possible.`;
           }
