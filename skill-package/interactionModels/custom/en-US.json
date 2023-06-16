@@ -38,21 +38,26 @@
           "name": "PerformMaintenanceIntent",
           "slots": [],
           "samples": [
-              "Clean",
-              "Clean coffee machine",
-              "Perform maintenance"
+              "maintenance",
+              "do maintenance",
+              "perform maintenance",
+              "clean",
+              "cleaning",
+              "do cleaning",
+              "perform cleaning"
           ]
         },
         {
             "name": "CountCoffeeIntent",
             "slots": [],
             "samples": [
-                "Count",
-                "Tally",
-                "Check coffees number",
-                "Tally coffees",
-                "Check how many coffees",
-                "Count coffees"
+                "count",
+                "count coffees",
+                "count number of coffees",
+                "tally",
+                "tally coffees",                
+                "check coffees number",
+                "check how many coffees",
             ]
         }
       ],
