@@ -140,7 +140,7 @@ const MakeCoffeeHandler = {
           const lm = item[1];
           const speechText = `Coffee recorded. Your coffee count is now ${count}. Last maintenance is on coffee ${lm}`;
           if (count >= lm + cleaningThreshold) {
-            speechText += ` Please clean your machine as soon as possible.`
+            speechText = speechText + ` Please clean your machine as soon as possible.`;
           }
           return handlerInput.responseBuilder
             .speak(speechText)
