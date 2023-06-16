@@ -71,8 +71,8 @@ const MakeCoffeeHandler = {
   async handle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+    const userId = handlerInput.requestEnvelope.session.user.userId;    
     if (request.type === 'IntentRequest' && request.intent.name === 'MakeCoffeeIntent') {
-        const userId = handlerInput.requestEnvelope.session.user.userId;
         try {
           const count = await incrementCountInDynamoDB(userId);
           const speechText = `Tally recorded. Your count is now ${count}.`;
