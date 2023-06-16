@@ -104,7 +104,8 @@ const MakeCoffeeHandler = {
             .getResponse();
         } 
     } else if (request.type === 'IntentRequest' && request.intent.name === 'CountCoffeeIntent') {
-      const speechText = `Count`;
+      const count = await getCountFromDynamoDB(userId);
+      const speechText = `You made ` + str(count) + ` Coffees`;
       return handlerInput.responseBuilder
         .speak(speechText)
         .getResponse();
