@@ -88,7 +88,6 @@ const MakeCoffeeHandler = {
     const request = handlerInput.requestEnvelope.request;
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
     if (request.type === 'IntentRequest' && request.intent.name === 'MakeCoffeeIntent') {
-        //return handlerInput.responseBuilder.speak("Worked").reprompt("Worked").getResponse();
         const userId = handlerInput.requestEnvelope.session.user.userId;
         try {
           const count = await incrementCountInDynamoDB(userId);
