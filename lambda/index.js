@@ -26,6 +26,8 @@ const sprintf = require('i18next-sprintf-postprocessor');
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 const TableName = process.env.DYNAMODB_PERSISTENCE_TABLE_NAME;
 
+const cleaningThreshold = 40;
+
 // helper functions for supported interfaces
 function supportsInterface(handlerInput, interfaceName) {
   const interfaces = ((((
@@ -39,12 +41,17 @@ function supportsAPL(handlerInput) {
   return supportsInterface(handlerInput, 'Alexa.Presentation.APL')
 }
 
-async function getCountFromDynamoDB(id) {
+async function getItemFromDynamoDB(id) {
   const params = {
     TableName: TableName,
     Key: { id: id },
   };
   const data = await dynamoDB.get(params).promise();
+  return data;
+}
+
+async function getCountFromDynamoDB(id) {
+  const data = await getItemFromDynamoDB(id);
   return data.Item ? data.Item.count : 0;
 }
 
@@ -55,17 +62,19 @@ async function incrementCountInDynamoDB(id) {
     UpdateExpression: 'SET #c = #c + :increment',
     ExpressionAttributeNames: { '#c': 'count' },
     ExpressionAttributeValues: { ':increment': 1 },
-    ReturnValues: 'UPDATED_NEW'
+    ReturnValues: 'ALL_NEW'
   };
 
   try {
     const data = await dynamoDB.update(params).promise();
     const updatedCount = data.Attributes.count;
-    return updatedCount;
+    const lm = data.attributes.lastMaintenance;
+    return [updatedCount, lm]
   } catch (error) {
     if (error.code === 'ValidationException' && error.message.includes('The provided expression refers to an attribute that does not exist in the item')) {
       // Item doesn't exist, attempt to create a new item
-      return createCountInDynamoDB(userId);
+      count = createCountInDynamoDB(userId);
+      return [count, 0];
     } else {
       console.error(`Error updating count: ${error.message}`);
       throw error;
@@ -126,14 +135,19 @@ const MakeCoffeeHandler = {
     const userId = handlerInput.requestEnvelope.session.user.userId;    
     if (request.type === 'IntentRequest' && request.intent.name === 'MakeCoffeeIntent') {
         try {
-          const count = await incrementCountInDynamoDB(userId);
-          const speechText = `Tally recorded. Your count is now ${count}.`;
+          const item = await incrementCountInDynamoDB(userId);
+          const count = item[0];
+          const lm = item[1];
+          const speechText = `Coffee recorded. Your coffee count is now ${count}. Last maintenance is on coffee ${lm}`;
+          if (count >= lm + cleaningThreshold) {
+            speechText += ` Please clean your machine as soon as possible.`
+          }
           return handlerInput.responseBuilder
             .speak(speechText)
             .getResponse();
         } catch (error) {
           console.error(`Error handled: ${error.message}`);
-          const speechText = 'Sorry, I couldn\'t record your tally. Please try again.';
+          const speechText = 'Sorry, I couldn\'t record your coffee. Please try again.';
           return handlerInput.responseBuilder
             .speak(speechText)
             .reprompt(speechText)
