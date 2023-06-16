@@ -12,7 +12,7 @@
  */
 
 //
-// Alexa Fact Skill - Sample for Beginners
+// Alexa Coffee Maker Skill - Keep maintenance for the machine
 //
 
 // sets up dependencies
@@ -80,7 +80,7 @@ async function incrementCountInDynamoDB(id) {
   } catch (error) {
     if (error.code === 'ValidationException' && error.message.includes('The provided expression refers to an attribute that does not exist in the item')) {
       // Item doesn't exist, attempt to create a new item
-      const count = createNewItem(id);
+      const count = await createNewItem(id);
       return [count, 0];
     } else {
       console.error(`Error updating count: ${error.message}`);
