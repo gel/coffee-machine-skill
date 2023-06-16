@@ -33,10 +33,31 @@
             "make espresso",
             "make {coffeeCount} coffees"
           ]
+        },
+        {
+          "name": "PerformMaintenanceIntent",
+          "slots": [],
+          "samples": [
+              "Clean",
+              "Clean coffee machine",
+              "Perform maintenance"
+          ]
+        },
+        {
+            "name": "CountCoffeeIntent",
+            "slots": [],
+            "samples": [
+                "Count",
+                "Tally",
+                "Check coffees number",
+                "Tally coffees",
+                "Check how many coffees",
+                "Count coffees"
+            ]
         }
       ],
       "types": [],
       "invocationName": "coffee machine"
-    }
+    }    
   }
 }
