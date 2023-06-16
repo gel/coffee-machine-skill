@@ -55,6 +55,13 @@ async function getCountFromDynamoDB(id) {
   return data.Item ? data.Item.count : 0;
 }
 
+async function getCoffeeDetails(id) {
+  const data = await getItemFromDynamoDB(id);
+  const count =  data.Item ? data.Item.count : 0;
+  const lm = data.Item ? data.Item.lastMaintenance : 0;
+  return [count, lm];
+}
+
 async function incrementCountInDynamoDB(id) {
   const params = {
     TableName: TableName,
@@ -138,7 +145,7 @@ const MakeCoffeeHandler = {
           const item = await incrementCountInDynamoDB(userId);
           const count = item[0];
           const lm = item[1];
-          let speechText = `Coffee recorded. Your coffee count is now ${count}. Last maintenance is on coffee ${lm}`;
+          let speechText = `Coffee recorded. Your coffee count is now ${count}. Last cleaning is on coffee ${lm}`;
           if (count >= lm + cleaningThreshold) {
             speechText = speechText + ` Please clean your machine as soon as possible.`;
           }
@@ -154,8 +161,17 @@ const MakeCoffeeHandler = {
             .getResponse();
         } 
     } else if (request.type === 'IntentRequest' && request.intent.name === 'CountCoffeeIntent') {
-      const count = await getCountFromDynamoDB(userId);
-      const speechText = `You have made ${count} coffees.`;
+      const item = await getCoffeeDetails(userId);
+      const count = item[0];
+      const lm = item[1];      
+      let speechText = `You have made ${count} coffees.`;
+      if (count >= lm + cleaningThreshold) {
+        speechText = speechText + ` Please clean your machine as soon as possible.`;
+      } else {
+        nextCleaning = lm + cleaningThreshold - count;
+        speechText = speechText + ` ${nextCleaning} coffees left before cleaning.`;
+      }
+
       return handlerInput.responseBuilder
         .speak(speechText)
         .getResponse();
