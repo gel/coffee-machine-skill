@@ -59,17 +59,17 @@ async function incrementCountInDynamoDB(id) {
   const params = {
     TableName: TableName,
     Key: { id: id },
-    UpdateExpression: 'SET #c = #c + :increment, #lm = #lm + :zero',
-    ExpressionAttributeNames: { '#c': 'count', '#lm': 'lastMaintenance' },
-    ExpressionAttributeValues: { ':increment': 1, ':zero': 0 },
+    UpdateExpression: 'SET #c = #c + :increment',
+    ExpressionAttributeNames: { '#c': 'count' },
+    ExpressionAttributeValues: { ':increment': 1 },
     ReturnValues: 'ALL_NEW'
   };
 
   try {
     const data = await dynamoDB.update(params).promise();
     const updatedCount = data.Attributes.count;
-    const lm = data.attributes.lastMaintenance;
-    return [updatedCount, lm]
+    // const lm = data.attributes.lastMaintenance;
+    return [updatedCount, 0]
   } catch (error) {
     if (error.code === 'ValidationException' && error.message.includes('The provided expression refers to an attribute that does not exist in the item')) {
       // Item doesn't exist, attempt to create a new item
