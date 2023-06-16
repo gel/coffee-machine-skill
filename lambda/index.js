@@ -68,8 +68,8 @@ async function incrementCountInDynamoDB(id) {
   try {
     const data = await dynamoDB.update(params).promise();
     const updatedCount = data.Attributes.count;
-    // const lm = data.attributes.lastMaintenance;
-    return [updatedCount, 0]
+    const lm = data.attributes.lastMaintenance;
+    return [updatedCount, lm];
   } catch (error) {
     if (error.code === 'ValidationException' && error.message.includes('The provided expression refers to an attribute that does not exist in the item')) {
       // Item doesn't exist, attempt to create a new item
