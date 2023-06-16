@@ -89,11 +89,11 @@ async function incrementCountInDynamoDB(id) {
   }
 }
 
-async function createCountInDynamoDB(userId) {
+async function createCountInDynamoDB(id) {
   const params = {
     TableName: TableName,
     Item: { id: id, count: 1 },
-    ConditionExpression: 'attribute_not_exists(userId)'
+    ConditionExpression: 'attribute_not_exists(id)'
   };
 
   try {
@@ -102,7 +102,7 @@ async function createCountInDynamoDB(userId) {
   } catch (error) {
     if (error.code === 'ConditionalCheckFailedException') {
       // Another concurrent write created the item, retry incrementing the count
-      return incrementCountInDynamoDB(userId);
+      return incrementCountInDynamoDB(id);
     } else {
       console.error(`Error creating count: ${error.message}`);
       throw error;
